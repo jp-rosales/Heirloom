@@ -1,0 +1,305 @@
+:root{
+  --page-bg:#eef1f6; --page-ink:#1c2233; --page-muted:#6b7280;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){ --page-bg:#0b0f1a; --page-ink:#e8ecf5; --page-muted:#8891a5; }
+}
+:root[data-theme="dark"]{ --page-bg:#0b0f1a; --page-ink:#e8ecf5; --page-muted:#8891a5; }
+
+/* ---------- paleta ambiental por región/bioma (mejora de diseño 2026-09 #5/P5) ----------
+   Los mismos contenedores/tarjetas de siempre, solo cambian sus colores. "valle" (Fenwold) es
+   la paleta por defecto y coincide EXACTAMENTE con los colores originales del juego, así que
+   quien empieza en esa región no ve ningún cambio visual. Las demás regiones re-tiñen el mismo
+   fondo/oscuridad (para que el texto blanco/oscuro que ya existe siga siendo legible) sin tocar
+   estructura, ni las tarjetas de color semántico (tan/rosa/verde/navy), ni los botones. */
+.app{
+  --pal-app:#0a2144; --pal-screen:#2c6bb0; --pal-stats:#1e5290; --pal-stats-border:#163f70;
+  --pal-band:#9ecef6; --pal-content:#cfe4ff;
+  --pal-navbar:#1a4d8f; --pal-navitem:#193f70; --pal-navitem-border:#143255;
+  --pal-card:#f3f7ee; --pal-card-border:#7c93a8;
+}
+.app[data-palette="mountain"]{
+  --pal-app:#1b232e; --pal-screen:#55677a; --pal-stats:#3e4d5e; --pal-stats-border:#2c3846;
+  --pal-band:#cfd9e0; --pal-content:#e3e9ee;
+  --pal-navbar:#3a4a5c; --pal-navitem:#2f3d4d; --pal-navitem-border:#232d3a;
+  --pal-card:#f4f6f3; --pal-card-border:#8c9aa6;
+}
+.app[data-palette="coast"]{
+  --pal-app:#0c2e33; --pal-screen:#2a7a82; --pal-stats:#1f5d64; --pal-stats-border:#164549;
+  --pal-band:#a8d9d6; --pal-content:#d4ecea;
+  --pal-navbar:#1c5a63; --pal-navitem:#184a52; --pal-navitem-border:#123a40;
+  --pal-card:#f2f7ee; --pal-card-border:#7ca39a;
+}
+.app[data-palette="dry"]{
+  --pal-app:#3a2416; --pal-screen:#b3703f; --pal-stats:#8f5730; --pal-stats-border:#6b3f20;
+  --pal-band:#e8cfa0; --pal-content:#f0e0bd;
+  --pal-navbar:#8a5a34; --pal-navitem:#714a2b; --pal-navitem-border:#573a20;
+  --pal-card:#f8f0e0; --pal-card-border:#b58a56;
+}
+.app[data-palette="marsh"]{
+  --pal-app:#22261a; --pal-screen:#5c6b3f; --pal-stats:#454f2e; --pal-stats-border:#333a20;
+  --pal-band:#c7c9a0; --pal-content:#dcdcb8;
+  --pal-navbar:#4a5530; --pal-navitem:#3c4527; --pal-navitem-border:#2c331c;
+  --pal-card:#f2f2e2; --pal-card-border:#8f9464;
+}
+
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;height:100%;}
+body{
+  background:var(--page-bg); color:var(--page-ink);
+  font-family:'Pixelify Sans', monospace;
+  height:100vh; height:100dvh;
+  display:flex; justify-content:center;
+  overflow:hidden;
+}
+button{font:inherit;}
+img.pixel{image-rendering:pixelated;image-rendering:crisp-edges;display:block;}
+* { border-radius:0 !important; }
+
+/* ---------- marco de la app: mismo lenguaje visual pixel-art del mockup "Thy Life So Far" ----------
+   Interfaz fija (mejora de diseño 2026-09 #11): .app/.screen usan height (no min-height), así el
+   flexbox queda estrictamente acotado a la altura de la ventana y SOLO .content (flex:1 + overflow-y)
+   puede hacer scroll — header y navegación quedan siempre visibles, como una app de juego móvil. */
+.app{ width:100%; max-width:460px; height:100vh; height:100dvh; background:var(--pal-app); display:flex; overflow:hidden; }
+.screen{ width:100%; display:flex; flex-direction:column; background:var(--pal-screen); height:100%; color:#16294a; overflow:hidden; min-height:0; }
+
+/* placeholder: bloque plano sin arte, mismo recurso que usa la propia referencia para su nav */
+.slot{ display:flex; align-items:center; justify-content:center; flex:none; background:rgba(255,255,255,.16); }
+.slot.on-tan{ background:rgba(20,30,50,.14); }
+
+/* ---------- header ---------- */
+.header{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; padding:calc(12px + env(safe-area-inset-top)) 12px 10px; background:var(--pal-screen); }
+.identity{ display:flex; align-items:center; gap:10px; min-width:0; }
+.portrait{ width:52px; height:52px; flex:none; background:#f3e8ca; border:3px solid #7a5a2c;
+  box-shadow:inset 2px 2px 0 #fff6df, inset -3px -3px 0 #cba766, 3px 3px 0 rgba(8,18,38,.4);
+  display:flex; align-items:center; justify-content:center; cursor:pointer; }
+.portrait img{ width:36px; height:36px; }
+.portrait.sm{ width:34px; height:34px; border-width:2px; }
+.portrait.sm img{ width:22px; height:22px; }
+.portrait.xs{ width:22px; height:22px; border-width:2px; box-shadow:inset 1px 1px 0 #fff6df, inset -2px -2px 0 #cba766, 2px 2px 0 rgba(8,18,38,.3); }
+.portrait.xs img{ width:15px; height:15px; }
+/* mejora de diseño 2026-09 #4: retrato grande en la pantalla YO, para poder apreciarlo de
+   verdad (antes esa pantalla ni siquiera mostraba el retrato del personaje). */
+.portrait.xl{ width:112px; height:112px; border-width:4px; margin:0 auto 10px; }
+.portrait.xl img{ width:78px; height:78px; }
+.yo-portrait-row{ display:flex; justify-content:center; }
+.identity-text{ min-width:0; }
+.char-name{ font-size:16px; font-weight:600; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.char-sub{ margin-top:2px; font-size:12px; color:#a9c6e8; }
+.header-actions{ display:flex; align-items:center; gap:6px; flex:none; margin-top:2px; }
+.coin-badge{ display:flex; align-items:center; gap:4px; }
+.coin-badge img{ width:16px; height:16px; }
+.coin-badge span{ font-size:14px; font-weight:600; color:#fff; }
+.icon-btn{ position:relative; width:34px; height:34px; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  background:none; border:none; padding:0; transition:transform .06s steps(1); }
+.icon-btn.chest{ background:#e8a93c; border:2px solid #5c3413; box-shadow:inset 2px 2px 0 #ffd77a, inset -2px -2px 0 #a86a1f, 3px 3px 0 #5c3413; }
+.icon-btn.gear{ background:#8fd0ea; border:2px solid #245571; box-shadow:inset 2px 2px 0 #d6f3ff, inset -2px -2px 0 #4a8ab0, 3px 3px 0 #245571; }
+.icon-btn:active{ transform:translate(3px,3px); }
+.icon-btn .slot{ width:16px; height:16px; }
+
+/* ---------- stats bar (salud / encanto / ingenio / fe) ---------- */
+.stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; padding:9px 12px 10px; background:var(--pal-stats); border-top:2px solid var(--pal-stats-border); border-bottom:2px solid var(--pal-stats-border); }
+.stat{ display:flex; flex-direction:column; gap:4px; min-width:0; }
+.stat-top{ display:flex; align-items:center; gap:5px; }
+.stat img.pixel{ width:17px; height:17px; flex:none; }
+.stat .slot{ width:17px; height:17px; }
+.stat-num{ font-size:13px; font-weight:600; color:#fff; }
+.stat-bar{ position:relative; height:7px; background:#123863; box-shadow:inset 1px 1px 0 rgba(0,0,0,.4); overflow:hidden; }
+.stat-bar>i{ position:absolute; inset:0 auto 0 0; height:100%; box-shadow:inset 0 2px 0 rgba(255,255,255,.45), inset 0 -2px 0 rgba(0,0,0,.2); }
+.stat-heart>i{ background:#ef4f5c; } .stat-charm>i{ background:#f7c948; } .stat-wits>i{ background:#63b3ec; } .stat-faith>i{ background:#5cbf72; }
+
+/* ---------- caption / cabecera de pantalla ---------- */
+.caption{ text-align:center; padding:9px 0 8px; font-size:12.5px; letter-spacing:.05em; color:#1c3a63; background:var(--pal-band); }
+.screen-head{ padding:12px 14px 6px; background:var(--pal-band); }
+.screen-head h2{ margin:0; font-size:16px; color:#12294e; }
+.screen-head .sub{ margin:3px 0 0; font-size:11.5px; color:#3d6491; }
+
+/* ---------- barra de sub-pestañas (usada en VIDA / HACER / GENTE) ---------- */
+.subtabs{ display:flex; gap:6px; padding:8px 12px 10px; background:var(--pal-band); overflow-x:auto; }
+.subtab{ flex:none; text-align:center; padding:7px 10px; font-size:10.5px; letter-spacing:.02em; color:#3d6491; background:var(--pal-band); border:2px solid transparent; cursor:pointer; white-space:nowrap; }
+.subtab.active{ color:#122c4e; font-weight:600; background:#eef7ff; border-color:#1c3a63; box-shadow:inset 2px 2px 0 #fff, inset -2px -2px 0 #bcd8f2, 2px 2px 0 #1c3a63; }
+
+/* ---------- contenido desplazable ---------- */
+.content{ flex:1; min-height:0; overflow-y:auto; background:var(--pal-content); padding:10px 12px 14px; display:flex; flex-direction:column; gap:9px; }
+.content h2{ font-size:15px; margin:2px 0 0; color:#12294e; }
+.content .lead{ font-size:11.5px; color:#3d6491; margin:2px 0 4px; }
+
+/* ---------- tarjetas ---------- */
+.card{ padding:10px 12px; background:var(--pal-card); border-left:5px solid var(--pal-card-border); }
+.card h3{ margin:0 0 8px; font-size:11px; letter-spacing:.06em; color:#3d6491; text-transform:uppercase; }
+.card.tan{ background:#f4e7c4; border-left-color:#c9a13c; }
+.card.pink{ background:#fbe3e3; border-left-color:#d6483c; }
+.card.green{ background:#e3f0d8; border-left-color:#4f8f4a; }
+.card.navy{ background:#132b52; border-left-color:#f7c948; color:#eaf1fb; }
+.card.navy h3{ color:#a9c6e8; }
+.card .label{ display:block; font-size:9.5px; letter-spacing:.06em; margin-bottom:4px; }
+.card .body{ font-size:12.5px; font-weight:500; line-height:1.35; color:#1c2b45; }
+.card.navy .body{ color:#dfe9fb; }
+.empty{ font-size:12px; color:#5c7597; font-style:italic; }
+
+/* ---------- filas estilo "ledger" (etiqueta ... valor) ---------- */
+.row{ display:flex; align-items:baseline; gap:6px; padding:3px 0; font-size:12.5px; }
+.row .k{ color:#3d6491; white-space:nowrap; }
+.row .leader{ flex:1; border-bottom:1px dotted #9ab6d8; transform:translateY(-3px); min-width:10px; }
+.row .v{ font-weight:600; color:#16294a; text-align:right; max-width:56%; }
+
+/* ---------- barra genérica (atributos, nobleza, hacienda) ---------- */
+.bar{ position:relative; height:8px; background:#d8e6f7; box-shadow:inset 1px 1px 0 rgba(0,0,0,.15); overflow:hidden; margin-top:3px; }
+.bar>i{ position:absolute; inset:0 auto 0 0; height:100%; background:#4f8f4a; box-shadow:inset 0 2px 0 rgba(255,255,255,.4); }
+.bar.low>i{ background:#d6483c; } .bar.mid>i{ background:#c9a13c; }
+
+/* ---------- botones pixel-art ---------- */
+.btn{ position:relative; display:inline-flex; align-items:center; justify-content:center; gap:6px;
+  padding:8px 12px; font-family:'Pixelify Sans',monospace; font-size:11.5px; font-weight:600; letter-spacing:.02em;
+  background:#eef7ff; color:#16294a; border:2px solid #1c3a63; cursor:pointer;
+  box-shadow:inset 2px 2px 0 #fff, inset -2px -2px 0 #bcd8f2, 2px 2px 0 #1c3a63;
+  transition:transform .06s steps(1); }
+.btn:active{ transform:translate(2px,2px); box-shadow:inset 2px 2px 0 #bcd8f2, inset -2px -2px 0 #fff; }
+.btn.primary{ background:#f7c948; border-color:#6b490f; box-shadow:inset 2px 2px 0 #fff3c4, inset -2px -2px 0 #c9922a, 2px 2px 0 #6b490f; }
+.btn.primary:active{ box-shadow:inset 2px 2px 0 #c9922a, inset -2px -2px 0 #fff3c4; }
+.btn.ghost{ background:#cfe4ff; box-shadow:inset 1px 1px 0 #fff, inset -1px -1px 0 #9ab6d8, 2px 2px 0 #6f8bab; border-color:#3d6491; }
+.btn.danger{ background:#f7c9c9; border-color:#8a231e; box-shadow:inset 2px 2px 0 #ffe4e4, inset -2px -2px 0 #d6483c, 2px 2px 0 #8a231e; }
+.btn:disabled{ opacity:.4; cursor:not-allowed; transform:none !important; }
+.btn.small{ padding:5px 9px; font-size:10px; }
+.btn.block{ width:100%; }
+.actions-row{ display:flex; flex-wrap:wrap; gap:7px; margin-top:9px; }
+
+/* ---------- insignias / tags ---------- */
+.taglist{ display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+.tag{ font-size:10px; padding:3px 8px; background:#eef7ff; border:2px solid #1c3a63; color:#16294a; letter-spacing:.02em; }
+.tag.on-tan{ background:#fff8e6; }
+
+/* ---------- filas de persona (familia / pueblo / listas) ---------- */
+.list-row{ display:flex; align-items:center; gap:9px; padding:9px 10px; background:var(--pal-card); border-left:5px solid var(--pal-card-border); }
+.list-row + .list-row{ margin-top:7px; }
+.list-row .info{ flex:1; min-width:0; }
+.list-row .name{ font-size:13px; font-weight:600; color:#16294a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.list-row .role{ font-size:10.5px; color:#5c7597; margin-top:1px; }
+.list-row .side{ text-align:right; flex:none; }
+.list-row .pct{ font-size:13px; font-weight:700; }
+.list-row .pct.warm{ color:#3f8a3f; } .list-row .pct.cool{ color:#8a6414; } .list-row .pct.hostile{ color:#b5352a; }
+.list-row .tiny{ font-size:9.5px; color:#5c7597; text-transform:uppercase; letter-spacing:.03em; }
+.list-row.dead{ opacity:.55; }
+.list-row.clickable{ cursor:pointer; }
+
+/* ---------- rejilla de actividades HACER ---------- */
+.do-grid{ display:grid; grid-template-columns:1fr 1fr; gap:9px; }
+.do-card{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; padding:10px; background:#f4e7c4; border-left:5px solid #c9a13c; cursor:pointer; text-align:left; border-top:none;border-right:none;border-bottom:none; font-family:'Pixelify Sans',monospace; }
+.do-card .ic{ width:26px; height:26px; }
+.animal-ic{ width:26px; height:26px; flex:none; }
+/* mejora de diseño 2026-09 #15: minijuego de tiempo de "Hacer" */
+.minigame-track{ position:relative; height:28px; background:#e7dbb9; border:3px solid #7a5a2c; margin:14px 0; overflow:hidden; }
+.minigame-zone{ position:absolute; top:0; bottom:0; background:rgba(80,140,80,.55); }
+.minigame-marker{ position:absolute; top:0; bottom:0; left:0; width:5px; background:#b5352a;
+  animation-name:minigame-move; animation-timing-function:linear; animation-iteration-count:infinite; animation-direction:alternate; }
+@keyframes minigame-move{ from{ left:0; } to{ left:calc(100% - 5px); } }
+.do-card .t{ font-size:12px; font-weight:700; color:#16294a; }
+.do-card .s{ font-size:10px; color:#5c7597; line-height:1.25; }
+.do-card:disabled{ opacity:.4; cursor:not-allowed; }
+
+/* ---------- genealogía (árbol vertical, una generación debajo de otra) ---------- */
+.gentree{ display:flex; flex-direction:column; align-items:stretch; gap:2px; }
+.genlevel{ display:flex; flex-direction:column; align-items:center; position:relative; padding-top:10px; }
+.genlevel:not(:first-child)::before{ content:''; position:absolute; top:0; left:50%; width:2px; height:10px; background:#a9c0d8; }
+.genlevel h4{ font-size:9px; text-transform:uppercase; letter-spacing:.06em; color:#3d6491; margin:0 0 6px; text-align:center; }
+.genlevel-row{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px 8px; width:100%; }
+.genperson{ display:flex; flex-direction:column; align-items:center; width:66px; cursor:pointer; text-align:center; }
+.genperson .portrait{ margin-bottom:3px; }
+.genperson .n{ font-weight:600; color:#16294a; font-size:9.5px; line-height:1.15; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100%; }
+.genperson .r{ color:#3d6491; font-size:8.5px; text-transform:uppercase; letter-spacing:.03em; }
+.genperson .y{ color:#5c7597; font-size:9px; }
+.genperson.you .portrait{ border-color:#c9a13c; box-shadow:inset 2px 2px 0 #fff6df, inset -3px -3px 0 #cba766, 0 0 0 2px #c9a13c; }
+.genperson.you .n{ color:#8a5a12; }
+.portrait.gen{ width:44px; height:44px; border-width:2px; }
+.portrait.gen img{ width:30px; height:30px; }
+.portrait.dead{ filter:grayscale(1); opacity:.75; }
+
+/* ---------- escena de la hacienda ---------- */
+.homestead{ display:flex; flex-direction:column; gap:6px; padding:8px 4px; }
+.homestead .row-icons{ display:flex; flex-wrap:wrap; gap:6px; align-items:center; }
+.homestead .row-icons .slot{ width:22px; height:22px; }
+.homestead .cap{ font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; color:#3d6491; }
+
+/* ---------- feed de vida (mejora de diseño 2026-09 #6): cada suceso es su propia tarjeta
+   con icono y color por tipo, en vez de una lista plana de texto — "una imagen dice más
+   que mil palabras". Reemplaza el viejo .hist-item plano (misma info, mejor legibilidad). */
+.feed-item{ display:flex; gap:9px; padding:8px 9px; margin-bottom:6px; background:var(--pal-card); border-left:4px solid var(--pal-card-border); }
+.feed-item:last-child{ margin-bottom:0; }
+.feed-item.tan{ background:#f4e7c4; border-left-color:#c9a13c; }
+.feed-item.pink{ background:#fbe3e3; border-left-color:#d6483c; }
+.feed-item.green{ background:#e3f0d8; border-left-color:#4f8f4a; }
+.feed-item.navy{ background:#132b52; border-left-color:#f7c948; }
+.feed-item.navy .feed-title{ color:#eaf1fb; }
+.feed-item.navy .feed-desc{ color:#a9c6e8; }
+.feed-item.navy .feed-year{ color:#7c93a8; }
+.feed-icon{ flex:none; width:22px; height:22px; display:flex; align-items:center; justify-content:center; }
+.feed-icon img.pixel{ width:18px; height:18px; }
+.feed-icon .slot{ width:18px; height:18px; }
+.feed-body{ flex:1; min-width:0; }
+.feed-top{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
+.feed-title{ font-size:12px; font-weight:600; color:#16294a; }
+.feed-year{ font-size:9.5px; color:#6b8199; flex:none; }
+.feed-desc{ font-size:11px; color:#3d6491; margin-top:2px; line-height:1.3; }
+/* ---------- separador de año, minimalista (mejora de diseño 2026-09 #10): entre bloques de años
+   distintos en el feed continuo de VIDA, sin encabezados grandes ni ocupar demasiado espacio. */
+.year-sep{ display:flex; align-items:center; gap:8px; margin:12px 2px 2px; }
+.year-sep:first-child{ margin-top:2px; }
+.year-sep-line{ flex:1; height:2px; background:#9ab6d8; opacity:.55; }
+.year-sep-label{ font-size:9px; letter-spacing:.07em; color:#3d6491; text-transform:uppercase; white-space:nowrap; font-weight:600; }
+/* compatibilidad: la Crónica completa reutiliza el mismo componente (eventItem) */
+.hist-item{ display:flex; gap:10px; padding:8px 0; border-bottom:1px solid #b9d4ef; }
+.hist-item:last-child{ border-bottom:none; }
+.hist-year{ font-size:11px; font-weight:700; color:#8a6414; width:38px; flex:none; }
+.hist-title{ font-size:12px; font-weight:600; color:#16294a; }
+.hist-desc{ font-size:11px; color:#3d6491; }
+
+/* ---------- footer + AGE UP ---------- */
+.footer{ background:var(--pal-app); padding:10px 12px 8px; }
+.actions-remaining{ text-align:center; font-size:11px; letter-spacing:.05em; color:#eaf1fb; margin-bottom:8px; }
+.age-up{ position:relative; width:100%; display:flex; align-items:center; justify-content:center; gap:8px;
+  background:#f7c948; border:3px solid #6b490f; box-shadow:inset 3px 3px 0 #fff3c4, inset -3px -3px 0 #c9922a, 0 5px 0 #6b490f;
+  padding:12px 0 11px; margin-bottom:8px; cursor:pointer; overflow:hidden; transition:transform .06s steps(1); font-family:'Pixelify Sans',monospace; }
+.age-up::before{ content:""; position:absolute; left:6px; top:5px; width:34%; height:9px; background:#fff9dd; opacity:.75; }
+.age-up:active{ transform:translateY(5px); box-shadow:inset 3px 3px 0 #c9922a, inset -3px -3px 0 #fff3c4; }
+.age-up .tri{ width:0; height:0; border-left:7px solid transparent; border-right:7px solid transparent; border-bottom:11px solid #5b3c06; }
+.age-up span{ font-size:14px; font-weight:600; color:#5b3c06; letter-spacing:.03em; }
+.age-up:disabled{ opacity:.55; cursor:not-allowed; }
+
+/* ---------- nav inferior sin ilustraciones (mejora de diseño 2026-09 #9): solo cajas/botones,
+   la pestaña activa se marca con el propio botón relleno, no con un ícono. */
+.navbar{ display:grid; grid-template-columns:repeat(6,1fr); background:var(--pal-navbar); padding:8px 4px calc(10px + env(safe-area-inset-bottom)); gap:4px; }
+.navitem{ display:flex; align-items:center; justify-content:center; padding:9px 2px; cursor:pointer; background:var(--pal-navitem); border:2px solid var(--pal-navitem-border); font-family:'Pixelify Sans',monospace; box-shadow:inset 1px 1px 0 rgba(255,255,255,.08); }
+.navitem.active{ background:#f4726c; border-color:#7a231e; box-shadow:inset 2px 2px 0 #ffb1ab, inset -2px -2px 0 #c0453d; }
+.navitem span{ font-size:9px; letter-spacing:.02em; color:#a9c0dd; text-align:center; line-height:1.2; }
+.navitem.active span{ color:#fff; font-weight:600; }
+
+/* ---------- modal (mismo lenguaje visual, tema pixel-art) ---------- */
+.overlay{ position:fixed; inset:0; background:rgba(10,20,40,.65); display:flex; align-items:center; justify-content:center; padding:16px; z-index:100; }
+.modal{ width:100%; max-width:400px; max-height:88vh; overflow-y:auto; background:#eef7ff; border:3px solid #1c3a63;
+  box-shadow:inset 2px 2px 0 #fff, 6px 6px 0 #0a2144; padding:16px; font-family:'Pixelify Sans',monospace; color:#16294a; }
+.modal h2{ margin:0 0 6px; font-size:15px; }
+.modal .eyebrow{ font-size:9.5px; text-transform:uppercase; letter-spacing:.1em; color:#c9922a; margin-bottom:6px; font-weight:700; }
+.modal p{ font-size:12.5px; color:#3d6491; margin:8px 0; line-height:1.4; }
+.option{ display:block; width:100%; text-align:left; background:#f3f7ee; border:2px solid #7c93a8; padding:9px 11px; margin-top:7px; cursor:pointer; color:#16294a; font-family:'Pixelify Sans',monospace; font-size:11.5px; }
+.option:hover{ border-color:#1c3a63; }
+.option b{ display:block; font-size:11.5px; margin-bottom:2px; }
+.modal-close-row{ margin-top:14px; display:flex; justify-content:flex-end; }
+.divider{ border:none; border-top:2px solid #bcd8f2; margin:12px 0; }
+
+/* ---------- tutorial guiado tipo spotlight (mejora de diseño 2026-09 #13) ----------
+   .tut-hole no tiene fondo propio: su enorme box-shadow oscurece TODO menos su propio hueco,
+   dejando ver (y, como pointer-events:none, pulsar) el botón real que hay debajo sin necesidad
+   de recortar la superposición con clip-path. El bloqueo de cualquier otro click se hace en JS
+   (ver el listener de clicks), no aquí — así este overlay puede quedarse puramente visual. */
+.tut-hole{ position:fixed; pointer-events:none; border:2px solid #f7c948; z-index:201;
+  box-shadow:0 0 0 3000px rgba(8,14,28,.74), inset 0 0 0 2px rgba(255,255,255,.35); transition:all .15s steps(3); }
+.tut-card{ position:fixed; z-index:202; width:230px; max-width:calc(100vw - 24px); pointer-events:none;
+  background:#eef7ff; border:3px solid #1c3a63; box-shadow:inset 2px 2px 0 #fff, 5px 5px 0 #0a2144;
+  padding:11px 13px; font-family:'Pixelify Sans',monospace; color:#16294a; }
+.tut-card .tut-eyebrow{ font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:#c9922a; font-weight:700; margin-bottom:4px; }
+.tut-card .tut-title{ font-size:13px; font-weight:700; margin-bottom:4px; }
+.tut-card .tut-text{ font-size:11px; color:#3d6491; line-height:1.35; }
+.tut-card .tut-hint{ font-size:9px; color:#8a6414; margin-top:8px; text-transform:uppercase; letter-spacing:.05em; font-weight:700; }
+
+.autosave{ font-size:9px; color:#a9c6e8; }
+.reset-link{ font-size:9px; color:#a9c6e8; text-decoration:underline; cursor:pointer; background:none; border:none; padding:0; }
